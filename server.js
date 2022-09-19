@@ -14,13 +14,16 @@ app.use(express.json());
 
 app.use(express.urlencoded({ extended: true }));
 
+require("./app/routes/user.routes.js")(app);
+app.use(express.static(__dirname + '/public'));
+
+
 app.get("/", (req, res) => {
   res.send('Server Deployed');
   res.json({ message: "Welcome" });
 });
 
 
-require("./app/routes/user.routes.js")(app);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
