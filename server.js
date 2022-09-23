@@ -1,29 +1,37 @@
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
-require("dotenv").config();
+
+const userRoutes = require("./routes/user.routes");
+const dataRoutes = require("./routes/data.routes");
 
 const app = express();
 
 var corsOptions = {
-  origin: "*"
+  origin: "*",
 };
 
+const db = require("./models");
+db.sequelize
+  .sync()
+  .then(() => {
+    console.log("Database is synced");
+  })
+  .catch((err) => {
+    console.log(err);
+  });
+
 app.use(cors(corsOptions));
-
 app.use(express.json());
-
 app.use(express.urlencoded({ extended: true }));
 
-require("./app/routes/user.routes.js")(app);
-app.use(express.static(__dirname + '/public'));
-
-
 app.get("/", (req, res) => {
-  res.send('Server Deployed');
+  res.send("Server Deployed");
   res.json({ message: "Welcome" });
 });
 
-
+app.use("/api/user", userRoutes);
+app.use("/api/data", dataRoutes);
 
 const PORT = process.env.PORT || 8080;
 app.listen(PORT, () => {
